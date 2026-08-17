@@ -1,0 +1,897 @@
+/*
+Assignment Title: Student Course Manager
+Name: Ria Shah
+Date: July 22, 2026
+Teacher's Name: Mr. Hynes
+
+Purpose:
+This program manages student grades, calculates averages,
+determines pass/fail results, sorts students by ID number,
+and writes all information to a file.
+*/
+
+
+import java.util.Scanner; //allows the program to get input from the user through the keyboard
+import java.io.FileWriter; //allows the program to create and write data to a file
+import java.io.IOException; //allows the program to handle errors that may occur when working with files
+
+
+public class StudentCourseManager
+{
+
+	static Scanner input = new Scanner(System.in); //creates scanner object to take in user input
+
+	static int[] ids; //stores student ids
+	static String[] firstNames; //stores first names
+	static String[] lastNames; //stores last names
+
+	static String[][] courses; //stores courses
+	static double[][] grades; //stores grades
+
+	static double[] averages; //stores averages
+
+	static int studentsNum; //stores number of students
+	static int semester; //stores the semester number 1 or 2
+
+
+
+	public static void main(String[] args) //allows the user to give inputs
+	{
+
+		int choice; //creates choice number variable
+
+
+		//do while loop allows menu to keep repeating until exit
+		do
+		{
+
+			System.out.println("\n===== STUDENT COURSE MANAGER =====");
+			System.out.println("1. Enter Student Information"); //asks the user to enter student information
+			System.out.println("2. Display Student Information"); //displays student information
+			System.out.println("3. Display Class Average"); //displays class average
+			System.out.println("4. Display Highest and Lowest Average"); //displays highest and lowest average
+			System.out.println("5. Sort Students by ID"); //sorts students by id info
+			System.out.println("6. Write Information to File"); //writes the info to the file
+			System.out.println("7. Exit "); //allows the user to exit
+
+
+			System.out.print("Enter choice: "); //asks for user's choice
+
+
+			while(!input.hasNextInt())
+			{
+				System.out.println("Invalid input. Enter a number.");
+				input.next();
+			} //checks if the choice is letters and asks the user to enter a number
+
+
+			choice = input.nextInt();
+			input.nextLine();
+
+
+
+			switch(choice) //uses the switch-case function to organize different options
+			{
+
+			case 1:
+				enterStudents();
+				break;
+
+
+			case 2:
+				displayStudents();
+				break;
+
+
+			case 3:
+				displayClassAverage();
+				break;
+
+
+			case 4:
+				displayHighestLowest();
+				break;
+
+
+			case 5:
+				bubbleSort();
+				break;
+
+
+			case 6:
+				writeFile();
+				break;
+
+
+			case 7:
+				System.out.println("Exiting program...");
+				break;
+
+
+			default:
+				System.out.println("Invalid option."); //if the user enters a number outside of 1-7 it writes invalid option
+
+			}
+
+
+
+		} while(choice != 7);
+
+
+		input.close();
+
+	}
+
+
+
+
+	public static void enterStudents()
+	{
+
+		System.out.print("\nEnter number of students: "); //asks for the number of students
+
+		while(!input.hasNextInt()) //checks if the input is a letter before reading it 
+		{
+			System.out.println("Invalid input. Please enter a number."); //tells user to enter a valid number
+			input.next(); 
+			System.out.print("Enter number of students: ");
+		}
+
+		studentsNum = input.nextInt();
+		input.nextLine();
+
+		while(studentsNum <= 0) //checks if the student number is negative or zero
+		{
+			System.out.println("Must be greater than 0."); //asks user to enter a number greater than 0
+			System.out.print("Enter number of students: ");
+
+			while(!input.hasNextInt())
+			{ //checks again if the input is a letter 
+				System.out.println("Invalid input. Please enter a number.");
+				input.next();
+				System.out.print("Enter number of students: ");
+			}
+
+			studentsNum = input.nextInt();
+			input.nextLine();
+		}
+
+
+		System.out.print("Enter semester (1 or 2): ");
+
+		while(!input.hasNextInt()) 
+		{
+			System.out.println("Invalid input. Please enter 1 or 2.");
+			input.next();
+			System.out.print("Enter semester (1 or 2): ");
+		}
+
+		semester = input.nextInt();
+		input.nextLine();
+
+		while(semester != 1 && semester != 2) //checks if semester is not 1 or 2
+		{
+			System.out.println("Invalid semester. Please enter 1 or 2.");
+			System.out.print("Enter semester (1 or 2): ");
+
+			while(!input.hasNextInt()) //checks if input is a letter 
+			{
+				System.out.println("Invalid input. Please enter 1 or 2.");
+				input.next();
+				System.out.print("Enter semester (1 or 2): ");
+			}
+
+			semester = input.nextInt();
+			input.nextLine();
+		}
+
+
+
+		ids = new int[studentsNum]; //creates an array for ids
+
+		firstNames = new String[studentsNum]; //creates an array for first names
+
+		lastNames = new String[studentsNum]; //creates an array for last names
+
+		courses = new String[studentsNum][4]; //creates an array for courses
+
+		grades = new double[studentsNum][4]; //creates an array for grades
+
+		averages = new double[studentsNum];//creates an array for averages
+
+
+
+		for(int i = 0; i < studentsNum; i++)
+			//goes through the number of students and asks the following
+		{
+
+			System.out.println("STUDENT " + (i+1));
+
+
+
+			boolean duplicate;
+
+        do
+        {
+            duplicate = false;
+        
+            System.out.print("Enter ID number: "); //asks for ID number 
+        
+            while(!input.hasNextInt())
+            {
+                System.out.println("Invalid input. Please enter a number.");
+                input.next();
+                System.out.print("Enter ID number: "); //checks if the ID is a number 
+            }
+        
+            ids[i] = input.nextInt();
+            input.nextLine();
+        
+            if(ids[i] < 0)
+            {
+                System.out.println("ID cannot be negative."); //checks if ID is negative 
+                duplicate = true;
+            }
+        
+            //checks for duplicate IDs
+            for(int k = 0; k < i; k++)
+            {
+                if(ids[k] == ids[i])
+                {
+                    System.out.println("ID already exists. Please enter a unique ID.");
+                    duplicate = true;
+                }
+            }
+        
+        } while(duplicate);
+
+
+
+			firstNames[i] = getValidText("Enter first name: "); //aks for first names and appends to array
+
+
+
+			lastNames[i] = getValidText("Enter last name: "); //asks for last names and appends to array
+
+
+
+			double total = 0; //the total variable for averages
+
+
+
+			for(int j = 0; j < 4; j++)
+			{
+
+				courses[i][j] = getValidText("Enter course " + (j+1) + ": "); //stores the course name in the course array
+
+
+
+				grades[i][j] = getGrade(); //calls the getGrade method to store the student's grade
+
+
+
+				if(grades[i][j] >= 50)
+				{
+					System.out.println("Passed"); //checks if the grade is greater than 50 if so passed
+				}
+				else
+				{
+					System.out.println("Failed"); //checks if the grade is less than 50 if so failed
+				}
+
+
+
+				total += grades[i][j]; //adds the grade to the total variable
+
+			}
+
+
+			averages[i] = total / 4; //adds the individual average of the student to the averages
+
+
+		}
+
+
+		System.out.println("\nStudent information entered successfully."); //if option 1 is a success prints out this message
+
+	}
+
+
+	public static String getValidText(String prompt) //ensures only letters and spaces are entered
+	{
+
+		String value; //stores the entered text
+
+
+		while(true)
+		{
+
+			System.out.print(prompt);
+
+			value = input.nextLine();
+
+
+			if(value.matches("[a-zA-Z ]+")) //checks that the input contains only letters and spaces
+			{
+				return value;
+			}
+
+
+			System.out.println("Invalid input. Please enter letters only.");
+
+		}
+
+	}
+
+
+	public static double getGrade()
+	{
+
+		double grade; //creates grade variable
+
+
+		while(true)
+		{
+
+			System.out.print("Enter grade (0-100): "); //asks the user to enter a grade between 0 and 100
+
+
+			if(input.hasNextDouble()) //checks to see if it is a number
+			{
+
+				grade = input.nextDouble();
+				input.nextLine();
+
+
+				if(grade >= 0 && grade <= 100)
+				{
+					return grade; //if the grade is a number checks to see if between 1 and 100
+				}
+
+			}
+
+			else
+			{
+				input.next();
+			}
+
+
+			System.out.println("Invalid grade. Please enter a value between 0 and 100."); //if it does not meet these requirements writes that it is an invalid input
+
+		}
+
+	}
+	
+	public static String getLetterGrade(double grade) //this method displays letter grades 
+    {
+        if(grade >= 95)
+        {
+            return "A+";
+        }
+        else if(grade >= 90)
+        {
+            return "A";
+        }
+        else if(grade >= 85)
+        {
+            return "A-";
+        }
+        else if(grade >= 80)
+        {
+            return "B+";
+        }
+        else if(grade >= 75)
+        {
+            return "B";
+        }
+        else if(grade >= 70)
+        {
+            return "B-";
+        }
+        else if(grade >= 65)
+        {
+            return "C+";
+        }
+        else if(grade >= 60)
+        {
+            return "C";
+        }
+        else if(grade >= 55)
+        {
+            return "C-";
+        }
+        else if(grade >= 50)
+        {
+            return "D";
+        }
+        else
+        {
+            return "F";
+        }
+    }
+
+
+
+	public static void displayStudents()
+	{
+
+		if(ids == null) //if there is nothing in ids
+		{
+			System.out.println("No student information available.");
+			return; //prints out no student info available
+		}
+
+
+
+		System.out.println("\n================ STUDENT RECORDS ================");
+
+
+		System.out.printf(
+		    "%-10s %-20s %-15s %-15s %-15s %-15s\n",
+		    "ID",
+		    "Name",
+		    "Course 1",
+		    "Course 2",
+		    "Course 3",
+		    "Course 4"
+		    );
+		    //formats and displays the column headings for the student record table
+		    //%-10s and %-15s control the spacing 
+
+
+		    for(int i = 0; i < studentsNum; i++)
+		{
+
+			System.out.printf(
+			    "%-10d %-20s %-15s %-15s %-15s %-15s\n",
+			    ids[i],
+			    firstNames[i] + " " + lastNames[i],
+			    courses[i][0],
+			    courses[i][1],
+			    courses[i][2],
+			    courses[i][3]
+			); //displays each student's ID, full name, and the 4 courses in a formatted table
+			//uses array indexes to access and display each student's stored information
+
+
+			System.out.print("Grades: "); //displays a label for the student's grades
+
+			for(int j = 0; j < 4; j++) //loops through the 4 courses to display each grade
+			{
+				System.out.print(grades[i][j] + "%   ");  //displays the grade for each course
+			}
+
+
+			System.out.printf(
+            "\nAverage: %.2f%% (%s)\n",
+            averages[i],
+            getLetterGrade(averages[i])
+        ); //displays the student's calculated average rounded to 2 decimal places and letter grades
+
+
+			System.out.println("---------------------------------------------");
+
+		}
+
+	}
+    
+    public static void displayClassAverage()
+    {
+    
+        if(averages == null) //checks if no student information has been entered
+        {
+            System.out.println("No student information available.");
+            return; //exits the method if there is no data to display
+        }
+    
+    
+        int passed = 0; //counts the number of students who passed
+
+        int failed = 0; //counts the number of students who failed
+
+
+
+        for(int i = 0; i < studentsNum; i++)
+        {
+            if(averages[i] >= 50)
+            {
+                passed++; //adds to the number of students who passed
+            }
+            else
+            {
+                failed++; //adds to the number of students who failed
+            }
+        }
+
+
+
+        double classAverage = calculateClassAverage();
+        //calculates the overall class average 
+
+
+        double passRate = (double) passed / studentsNum * 100;
+        //calculates pass rate
+    
+    
+    
+        System.out.printf(
+        "\nClass Average: %.2f%% (%s)\n",
+        classAverage,
+        getLetterGrade(classAverage)
+        );
+        //displays the class average and corresponding letter grade 
+    
+        System.out.println(
+            "Students Passed: " + passed
+        ); //displays the total number of students who passed
+    
+    
+        System.out.println(
+            "Students Failed: " + failed
+        ); //displays the total number of students who failed
+    
+    
+        System.out.printf(
+            "Pass Rate: %.1f%%\n",
+            passRate
+        ); //displays the class pass rate rounded to one decimal place
+    
+    }
+
+
+    public static double calculateClassAverage() 
+    {
+        double total = 0; //stores the total of all student averages
+
+        for(int i = 0; i < studentsNum; i++)
+        {
+            total += averages[i]; //adds each student's average to the total
+        }
+
+        return total / studentsNum; //returns the overall class average
+    }
+
+
+    public static int findHighestIndex() //checks the highest grade 
+    {
+        int highestIndex = 0; //assumes the first student has the highest average
+
+        for(int i = 1; i < studentsNum; i++)
+        {
+            if(averages[i] > averages[highestIndex])
+            {
+                highestIndex = i; //updates the index whenever a higher average is found
+            }
+        }
+
+        return highestIndex;
+    }
+
+
+    public static int findLowestIndex() //checks the lowest average
+    {
+        int lowestIndex = 0; //assumes the first student has the lowest average
+
+        for(int i = 1; i < studentsNum; i++)
+        {
+            if(averages[i] < averages[lowestIndex])
+            {
+                lowestIndex = i; //updates the index whenever a lower average is found
+            }
+        }
+
+        return lowestIndex;
+    }
+
+
+
+	public static void displayHighestLowest()
+	{
+
+		if(averages == null) //if averages is empty prints out the following
+		{
+			System.out.println("No student information available.");
+			return;
+		}
+
+
+
+		int highestIndex = findHighestIndex(); //gets the index of the student with the highest average
+
+		int lowestIndex = findLowestIndex(); //gets the index of the student with the lowest average
+
+
+		String highestName =
+		    firstNames[highestIndex] + " " + lastNames[highestIndex];
+
+
+		String lowestName =
+		    firstNames[lowestIndex] + " " + lastNames[lowestIndex];
+
+
+
+		System.out.printf(
+		    "\nThe student with the highest average is %s with %.2f%%",
+		    highestName,
+		    averages[highestIndex]
+		);
+		//prints out highest average
+
+		System.out.printf(
+		    "\nThe student with the lowest average is %s with %.2f%%\n",
+		    lowestName,
+		    averages[lowestIndex]
+		);
+		//prints out lowest average
+	}
+
+
+
+	public static void bubbleSort() //sorts student information in ascending order based on student ID
+	{
+
+		if(ids == null)
+		{
+			System.out.println("No student information available.");
+			return; //exits the method if no student data has been entered
+		}
+
+
+
+		for(int i = 0; i < studentsNum - 1; i++)
+		{
+
+			for(int j = 0; j < studentsNum - i - 1; j++)
+			{	//compares neighbouring student IDs
+
+
+				if(ids[j] > ids[j+1])
+				{
+
+					//swaps IDs to place them in the correct order
+					int tempID = ids[j];
+					ids[j] = ids[j+1];
+					ids[j+1] = tempID;
+
+					//swaps first name for correct order
+					String tempFirst = firstNames[j];
+					firstNames[j] = firstNames[j+1];
+					firstNames[j+1] = tempFirst;
+
+
+					//swaps last name for correct order
+					String tempLast = lastNames[j];
+					lastNames[j] = lastNames[j+1];
+					lastNames[j+1] = tempLast;
+
+
+					//swaps courses for correct order for each student
+					String[] tempCourse = courses[j];
+					courses[j] = courses[j+1];
+					courses[j+1] = tempCourse;
+
+
+					//swaps grades for each student for correct order
+					double[] tempGrade = grades[j];
+					grades[j] = grades[j+1];
+					grades[j+1] = tempGrade;
+
+
+					//swaps averages to keep correct average for student
+					double tempAverage = averages[j];
+					averages[j] = averages[j+1];
+					averages[j+1] = tempAverage;
+
+
+				}
+
+			}
+
+		}
+
+
+
+		System.out.println("Students successfully sorted by ID."); //prints out the following if successful
+
+	}
+	
+	public static String capitalize(String text) //capitalizes the first letter of a name, rest lowercase
+	{
+
+		if(text == null || text.isEmpty()) //handles empty or missing text safely
+		{
+			return text;
+		}
+
+		return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+		//makes the first letter uppercase and the rest lowercase
+
+	}
+
+	public static void writeFile()
+{
+
+    if(ids == null)
+    {
+        System.out.println("No student information available.");
+        return; //exits the method if no student data exists
+    }
+
+
+
+    try(FileWriter myWriter = new FileWriter("Students.txt"))
+    {
+
+        myWriter.write("========== STUDENT COURSE MANAGER ==========\n");
+        myWriter.write("Semester " + semester + "\n\n"); //writes the semester chosen
+
+
+
+        //writes formatted column headings for the student records
+        myWriter.write(
+            String.format(
+                "%-10s %-20s %-15s %-15s %-15s %-15s\n",
+                "ID",
+                "Name",
+                "Course 1",
+                "Course 2",
+                "Course 3",
+                "Course 4"
+            )
+        );
+
+        myWriter.write("--------------------------------------------------------------------------------\n");
+
+
+
+        for(int i = 0; i < studentsNum; i++)
+        {
+            //loops through each student to write their information
+
+
+            myWriter.write(
+                String.format(
+                    "%-10d %-20s %-15s %-15s %-15s %-15s\n",
+                    ids[i],
+                    capitalize(firstNames[i]) + " " + capitalize(lastNames[i]),
+                    courses[i][0],
+                    courses[i][1],
+                    courses[i][2],
+                    courses[i][3]
+                )
+            );
+            //writes each student's info in table format
+
+
+
+            myWriter.write(
+                String.format(
+                    "%-30s %-15s %-15s %-15s %-15s\n",
+                    "Grades:",
+                    String.format("%.1f%%", grades[i][0]),
+                    String.format("%.1f%%", grades[i][1]),
+                    String.format("%.1f%%", grades[i][2]),
+                    String.format("%.1f%%", grades[i][3])
+                )
+            );
+            //writes each student's grades in table 
+
+
+
+            myWriter.write(
+                String.format(
+                    "%-10s %.2f%% (%s)\n",
+                    "Average:",
+                    averages[i],
+                    getLetterGrade(averages[i])
+                )
+            );
+            //writes the student's average and corresponding letter grade
+            
+
+
+
+            myWriter.write("--------------------------------------\n\n");
+
+        }
+
+
+
+   
+
+        double classAverage = calculateClassAverage();
+
+
+
+        myWriter.write(
+            String.format(
+            "\nClass Average: %.2f%% (%s)\n\n",
+            classAverage,
+            getLetterGrade(classAverage)
+            )
+        );
+        //writes the final class average letter grade to the file
+        
+
+
+
+
+        //find highest and lowest grades 
+
+
+        int highestIndex = findHighestIndex();
+
+        int lowestIndex = findLowestIndex();
+
+
+        String highestName =
+            capitalize(firstNames[highestIndex]) + " " + capitalize(lastNames[highestIndex]);
+        //stores the student's name with highest grade
+
+
+        String lowestName =
+            capitalize(firstNames[lowestIndex]) + " " + capitalize(lastNames[lowestIndex]);
+        //stores the student's name with lowest grade
+
+
+
+        
+        
+        myWriter.write(
+            String.format(
+                "Highest Average: %s - %.2f%% (%s)\n",
+                highestName,
+                averages[highestIndex],
+                getLetterGrade(averages[highestIndex])
+            )
+        );
+        
+        //writes the student with the highest average and letter to file 
+
+
+
+
+        myWriter.write(
+            String.format(
+            "Lowest Average: %s - %.2f%% (%s)\n",
+            lowestName,
+            averages[lowestIndex],
+            getLetterGrade(averages[lowestIndex])
+            )
+        );
+        
+        //writes the student with the lowest average and their  letter grade to the file
+
+
+
+
+        myWriter.flush();
+        //ensures all remaining information is written before closing the file
+
+
+        java.io.File savedFile = new java.io.File("Students.txt");
+        //creates a file object to check the saved file information
+
+
+
+        System.out.println("Successfully written to Students.txt");
+        System.out.println("File location: " + savedFile.getAbsolutePath());
+        System.out.println("File size: " + savedFile.length() + " bytes");
+        //wrote this initially to see where the file went as I was not able to find it 
+
+
+
+    }
+
+
+    catch(IOException e)
+    {
+
+        System.out.println("Error writing file.");
+        e.printStackTrace();
+        //handles any errors that occur while writing to the file
+
+    }
+
+}
+}
