@@ -1,0 +1,110 @@
+/*
+ * Name: Ria Shah
+ * Date: July 13, 2026
+ * Program/Assignment Title: Multiplication Table Generator
+ * Description:
+ * This program asks the user for a number between 1 and 100 and then
+ * creates a multiplication table with each number multiplied
+ * by the numbers 1 through 20.
+ *
+ * Updates based on teacher feedback:
+ * - Added exception handling so the program doesn't crash on non-numeric input
+ * - Split the program into methods to keep main() organized
+ * - Used a 2D array to store the multiplication table before printing it
+ */
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class Multiplication Table Generator {
+
+    public static void main(String[] args) {
+        //allows the program to accept inputs from the user
+        Scanner input = new Scanner(System.in);
+        //creates a Scanner object to read input from the user's keyboard
+
+        int number = getValidNumber(input);
+        //this method handles asking the user and validating the input, including non-numeric entries
+
+        int[][] table = buildTable(number);
+        //this method builds the multiplication table and stores it in a 2D array
+
+        printTable(table);
+        //this method prints out the array we just built
+
+        input.close();
+    }
+
+
+    //This method asks the user for a number between 1 and 100
+    //It keeps asking until a valid number is entered, and it catches non-numeric input too
+    public static int getValidNumber(Scanner input) {
+        int number = 0;
+        boolean validInput = false;
+        //this flag tells the loop when a good number has finally been entered
+
+        while (!validInput) {
+            System.out.print("Enter a number between 1 and 100: ");
+
+            try {
+                number = input.nextInt();
+                //tries to read an integer from the console
+
+                if (number < 1 || number > 100) {
+                    System.out.println("Invalid input. Please enter a number between 1 and 100.");
+                    //checks to make sure that the number is between 1 and 100, if not it prints invalid input
+                } else {
+                    validInput = true;
+                    //if the number is in range, we can stop looping
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a whole number.");
+                //this runs if the user types something that isn't a number, like a letter or symbol
+                input.nextLine();
+                //clears the bad input so the scanner doesn't get stuck re-reading it
+            }
+        }
+
+        return number;
+    }
+
+
+    //This method builds the multiplication table for the given number
+    //and stores it in a 2D array instead of printing directly
+    public static int[][] buildTable(int number) {
+        int[][] table = new int[number][20];
+        //rows go from 1 to number, columns go from 1 to 20
+
+        for (int row = 1; row <= number; row++) {
+            //this loop controls the rows of the multiplication table
+
+            for (int column = 1; column <= 20; column++) {
+                // inner loop multiplies each row value by numbers 1 through 20
+
+                table[row - 1][column - 1] = row * column;
+                //stores the product in the array (arrays start at index 0, so we subtract 1)
+            }
+        }
+
+        return table;
+    }
+
+
+    //This method takes the 2D array and prints it out as a table
+    public static void printTable(int[][] table) {
+        for (int row = 0; row < table.length; row++) {
+            //this loop goes through each row stored in the array
+
+            for (int column = 0; column < table[row].length; column++) {
+                //this loop goes through each value in that row
+
+                System.out.print(table[row][column] + "\t");
+                //displays the calculated product in the table
+            }
+
+            //Moves to the next row after all 20 multiplication values are printed
+            System.out.println();
+        }
+    }
+}
+
