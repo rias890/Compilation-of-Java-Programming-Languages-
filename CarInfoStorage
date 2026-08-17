@@ -1,0 +1,394 @@
+//Name: Ria Shah 
+//Date: July 9, 2026
+//Assignment Title: Portfolio Question #5
+//Purpose: This program allows the user to enter information for up to 10 vehicles, including the make, model, //mileage, and year of each vehicle. The program then displays the vehicle information in the required format and //uses calculations to determine the highest and lowest mileage, the difference between these values, and the //average mileage of all vehicles entered. This program demonstrates the use of while, do-while, and for loops.
+
+import java.util.Scanner;
+
+public class CarInfoStorage
+{
+    public static void main(String[] args)
+    {
+        Scanner input = new Scanner(System.in);
+        //scanner object to take in input 
+
+        String make1="", make2="", make3="", make4="", make5="";
+        String make6="", make7="", make8="", make9="", make10="";
+        //I created the different variables of the makes upto to make 10
+
+        String model1="", model2="", model3="", model4="", model5="";
+        String model6="", model7="", model8="", model9="", model10="";
+        //Here I created the different models upto to model 10 
+
+        int mileage1=0, mileage2=0, mileage3=0, mileage4=0, mileage5=0;
+        int mileage6=0, mileage7=0, mileage8=0, mileage9=0, mileage10=0;
+        //Here I created the different mileages upto to mileage 10 
+
+        int year1=0, year2=0, year3=0, year4=0, year5=0;
+        int year6=0, year7=0, year8=0, year9=0, year10=0;
+        //Here I created the different years upto year 10 
+
+
+       
+        int numberofcars = 0;
+        //Here I created a variable that sets the number of cars there to 0 
+
+        while(numberofcars < 1 || numberofcars > 10)
+        //This while loop only runs if the number of cars is greater than 1 and less than 10
+        {
+            System.out.print("How many cars would you like to enter (1-10): ");
+            numberofcars = input.nextInt();
+            //This allows the user to enter the number of cars they would like 
+            input.nextLine();
+
+            if(numberofcars < 1 || numberofcars > 10)
+            //If the number of cars is invalid then the user recieves the following message
+            {
+                System.out.println("Invalid number. Please enter 1-10.");
+            }
+        }
+
+
+        int carnumber= 1;
+        //This sets the initial car number that the program is providing information for
+
+
+
+        do
+        {
+            System.out.println("Car #" + carnumber);
+
+            System.out.print("Enter the make: ");
+            String make = input.nextLine();
+            //Asks the user for the car's make
+
+            System.out.print("Enter the model: ");
+            String model = input.nextLine();
+            //Asks the user for the car's model 
+
+            System.out.print("Enter the mileage in kilometers: ");
+            int mileage = input.nextInt();
+            //Asks the user for the car's mileage 
+
+            System.out.print("Enter the year: ");
+            int year = input.nextInt();
+            //Asks the user for the year of the car 
+
+            input.nextLine();
+
+
+            if(carnumber == 1)
+            {
+                make1 = make;
+                model1 = model;
+                mileage1 = mileage;
+                year1 = year;
+            }
+
+            if(carnumber == 2)
+            {
+                make2 = make;
+                model2 = model;
+                mileage2 = mileage;
+                year2 = year;
+            }
+
+            if(carnumber == 3)
+            {
+                make3 = make;
+                model3 = model;
+                mileage3 = mileage;
+                year3 = year;
+            }
+
+            if(carnumber == 4)
+            {
+                make4 = make;
+                model4 = model;
+                mileage4 = mileage;
+                year4 = year;
+            }
+
+            if(carnumber == 5)
+            {
+                make5 = make;
+                model5 = model;
+                mileage5 = mileage;
+                year5 = year;
+            }
+
+            if(carnumber == 6)
+            {
+                make6 = make;
+                model6 = model;
+                mileage6 = mileage;
+                year6 = year;
+            }
+
+            if(carnumber == 7)
+            {
+                make7 = make;
+                model7 = model;
+                mileage7 = mileage;
+                year7 = year;
+            }
+
+            if(carnumber == 8)
+            {
+                make8 = make;
+                model8 = model;
+                mileage8 = mileage;
+                year8 = year;
+            }
+
+            if(carnumber == 9)
+            {
+                make9 = make;
+                model9 = model;
+                mileage9 = mileage;
+                year9 = year;
+            }
+
+            if(carnumber == 10)
+            {
+                make10 = make;
+                model10 = model;
+                mileage10 = mileage;
+                year10 = year;
+            }
+            //These steps set the car numbers to their respective variables 
+
+            carnumber++;
+
+        } while(carnumber <= numberofcars);
+        //This input prompting keeps going as long as the carnumber is less than the number of cars the user inputted
+
+
+
+        //This adds all the mileages for the total mileage 
+        int mileagetotal = mileage1 + mileage2 + mileage3 + mileage4 + mileage5
+                          + mileage6 + mileage7 + mileage8 + mileage9 + mileage10;
+
+
+        double averagemileage = (double)mileagetotal / numberofcars;
+        //This will find the average mileage of all the cars that were entered  
+
+
+
+        // Find largest and smallest mileage
+
+        int largestMileage = mileage1;//First I set the largest mileage automatically to the mileage 1
+        int smallestMileage = mileage1;//Second I set the smallest mileage to mileage 1 as well
+
+        //These variables keep track of which car goes with the largest/smallest mileage
+        //They start off as car #1's info, same as largestMileage and smallestMileage above
+        String largestMake = make1, largestModel = model1;
+        int largestYear = year1;
+
+        String smallestMake = make1, smallestModel = model1;
+        int smallestYear = year1;
+
+
+        if(numberofcars >= 2)//This first checks how many cars there are and if the number is greater than 2
+        {
+            if(mileage2 > largestMileage)//This checks if the mileage of car number 2 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage2;
+                largestMake = make2; largestModel = model2; largestYear = year2;
+                //Whenever largestMileage gets updated, I update its matching vehicle info too
+            }
+
+            if(mileage2 < smallestMileage)//This checks if the smallest mileage is less than car number 2's so that I can reset it again 
+            {
+                smallestMileage = mileage2;
+                smallestMake = make2; smallestModel = model2; smallestYear = year2;
+            }
+        }
+
+        if(numberofcars >= 3)//This first checks how many cars there are and if the number is greater than 3
+        {
+            if(mileage3 > largestMileage)//This checks if the mileage of car number 3 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage3;
+                largestMake = make3; largestModel = model3; largestYear = year3;
+            }
+
+            if(mileage3 < smallestMileage)//This checks if the smallest mileage is less than car number 3's so that I can reset it again 
+            {
+                smallestMileage = mileage3;
+                smallestMake = make3; smallestModel = model3; smallestYear = year3;
+            }
+        }
+
+        if(numberofcars >= 4)//This first checks how many cars there are and if the number is greater than 4
+        {
+            if(mileage4 > largestMileage)//This checks if the mileage of car number 4 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage4;
+                largestMake = make4; largestModel = model4; largestYear = year4;
+            }
+
+            if(mileage4 < smallestMileage)//This checks if the smallest mileage is less than car number 4's so that I can reset it again 
+            {
+                smallestMileage = mileage4;
+                smallestMake = make4; smallestModel = model4; smallestYear = year4;
+            }
+        }
+
+        if(numberofcars >= 5)//This first checks how many cars there are and if the number is greater than 5
+        {
+            if(mileage5 > largestMileage)//This checks if the mileage of car number 5 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage5;
+                largestMake = make5; largestModel = model5; largestYear = year5;
+            }
+
+            if(mileage5 < smallestMileage)//This checks if the smallest mileage is less than car number 5's so that I can reset it again 
+            {
+                smallestMileage = mileage5;
+                smallestMake = make5; smallestModel = model5; smallestYear = year5;
+            }
+        }
+
+        if(numberofcars >= 6)//This first checks how many cars there are and if the number is greater than 6
+        {
+            if(mileage6 > largestMileage)//This checks if the mileage of car number 6 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage6;
+                largestMake = make6; largestModel = model6; largestYear = year6;
+            }
+
+            if(mileage6 < smallestMileage)//This checks if the smallest mileage is less than car number 6's so that I can reset it again 
+            {
+                smallestMileage = mileage6;
+                smallestMake = make6; smallestModel = model6; smallestYear = year6;
+            }
+        }
+
+        if(numberofcars >= 7)//This first checks how many cars there are and if the number is greater than 7
+        {
+            if(mileage7 > largestMileage)//This checks if the mileage of car number 7 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage7;
+                largestMake = make7; largestModel = model7; largestYear = year7;
+            }
+
+            if(mileage7 < smallestMileage)//This checks if the smallest mileage is less than car number 7's so that I can reset it again 
+            {
+                smallestMileage = mileage7;
+                smallestMake = make7; smallestModel = model7; smallestYear = year7;
+            }
+        }
+
+        if(numberofcars >= 8)//This first checks how many cars there are and if the number is greater than 8
+        {
+            if(mileage8 > largestMileage)//This checks if the mileage of car number 8 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage8;
+                largestMake = make8; largestModel = model8; largestYear = year8;
+            }
+
+            if(mileage8 < smallestMileage)//This checks if the smallest mileage is less than car number 8's so that I can reset it again 
+            {
+                smallestMileage = mileage8;
+                smallestMake = make8; smallestModel = model8; smallestYear = year8;
+            }
+        }
+
+        if(numberofcars >= 9)//This first checks how many cars there are and if the number is greater than 9
+        {
+            if(mileage9 > largestMileage)//This checks if the mileage of car number 9 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage9;
+                largestMake = make9; largestModel = model9; largestYear = year9;
+            }
+
+            if(mileage9 < smallestMileage)//This checks if the smallest mileage is less than car number 9's so that I can reset it again 
+            {
+                smallestMileage = mileage9;
+                smallestMake = make9; smallestModel = model9; smallestYear = year9;
+            }
+        }
+
+        if(numberofcars == 10)//This first checks how many cars there are and if the number is greater than 10
+        {
+            if(mileage10 > largestMileage)//This checks if the mileage of car number 10 is greater than the largest mileage so I can reset it 
+            {
+                largestMileage = mileage10;
+                largestMake = make10; largestModel = model10; largestYear = year10;
+            }
+
+            if(mileage10 < smallestMileage)//This checks if the smallest mileage is less than car number 10's so that I can reset it again 
+            {
+                smallestMileage = mileage10;
+                smallestMake = make10; smallestModel = model10; smallestYear = year10;
+            }
+        }
+
+
+
+      
+
+        for(int i = 1; i <= numberofcars; i++)
+        //This for loop will display all the vehicle information iterating from 1 to the total number of cars
+        {
+            System.out.println("\nVehicle #" + i);
+
+            if(i == 1)
+                System.out.println("Year:"+ year1 + " " + "Model:"+ model1 + " " +"Make:"+ make1 + " " +"Mileage:" +mileage1 + " km");
+
+            if(i == 2)
+                System.out.println("Year:"+ year2 + " " + "Model:"+ model2 + " " +"Make:"+ make2 + " " +"Mileage:" +mileage2 + " km");
+
+            if(i == 3)
+                System.out.println("Year:"+ year3 + " " + "Model:"+ model3 + " " +"Make:"+ make3 + " " +"Mileage:" +mileage3 + " km");
+               
+
+            if(i == 4)
+                System.out.println("Year:"+ year4 + " " + "Model:"+ model4 + " " +"Make:"+ make4 + " " +"Mileage:" +mileage4 + " km");
+               
+
+            if(i == 5)
+                System.out.println("Year:"+ year5 + " " + "Model:"+ model5 + " " +"Make:"+ make5 + " " +"Mileage:" +mileage5 + " km");
+               
+
+            if(i == 6)
+                System.out.println("Year:"+ year6 + " " + "Model:"+ model6 + " " +"Make:"+ make6 + " " +"Mileage:" +mileage6 + " km");
+               
+
+            if(i == 7)
+                System.out.println("Year:"+ year7 + " " + "Model:"+ model7 + " " +"Make:"+ make7 + " " +"Mileage:" +mileage7 + " km");
+               
+
+            if(i == 8)
+                System.out.println("Year:"+ year8 + " " + "Model:"+ model8 + " " +"Make:"+ make8 + " " +"Mileage:" +mileage8 + " km");
+                
+
+            if(i == 9)
+                System.out.println("Year:"+ year9 + " " + "Model:"+ model9 + " " +"Make:"+ make9 + " " +"Mileage:" +mileage9 + " km");
+                
+
+            if(i == 10)
+                System.out.println("Year:"+ year10 + " " + "Model:"+ model10 + " " +"Make:"+ make10 + " " +"Mileage:" +mileage10 + " km");
+                
+        }
+
+
+        System.out.println("\nLargest Mileage: " + largestMileage + " km");
+        System.out.println("Vehicle with Largest Mileage: " + largestYear + " " + largestMake + " " + largestModel);
+        //This prints out which car had the largest mileage, using the info I saved as largestMileage was being updated
+
+        System.out.println("Smallest Mileage: " + smallestMileage + " km");
+        System.out.println("Vehicle with Smallest Mileage: " + smallestYear + " " + smallestMake + " " + smallestModel);
+        //This prints out which car had the smallest mileage, using the info I saved as smallestMileage was being updated
+
+        System.out.println("Difference: " + (largestMileage - smallestMileage) + " km");
+        System.out.println("Average Mileage: " + averagemileage + " km");
+
+
+        input.close();
+    }
+}
+
+
+
