@@ -1,0 +1,479 @@
+// Name:        Group 1
+// Date:        July 2026
+// Teacher:     Mr. Hynes
+// File:        Bakery.java
+// Assignment:  Bakery Database & Point of Sale System
+// Description: A full POS and Inventory Database. Features file saving, robust error trapping, sorting, and receipt generation.
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Bakery {
+
+    // Global Scanner for reading keyboard input
+    static Scanner input = new Scanner(System.in);
+    
+    // ArrayLists to store inventory and current cart items in memory
+    static ArrayList<Product> inventory = new ArrayList<Product>();
+    static ArrayList<SaleItem> currentCart = new ArrayList<SaleItem>(); 
+    
+    // Tax rate and file name constants
+    private static final double TAX_RATE = 0.13;
+    private static final String FILE_NAME = "Bakery.txt";
+
+    // Simple holder class for one line of a sale in the receipt
+    public static class SaleItem {
+        int id;
+        String description;
+        int quantitySold;
+        double price;
+
+        public SaleItem(int id, String description, int quantitySold, double price) {
+            this.id = id;
+            this.description = description;
+            this.quantitySold = quantitySold;
+            this.price = price;
+        }
+    }
+
+    public static void main(String[] args) {
+        // Loads data from file to memory on startup
+        loadInventory();
+        int choice;
+
+        // Do-While loop ensures the menu runs at least once
+        do {
+            displayMenu();
+            // Traps the menu choice specifically between 1 and 8
+            choice = getInt("Enter your choice (1-8): ", 1, 8);
+
+            // Switch statement to handle menu navigation
+            switch (choice) {
+                case 1: addProduct(); break;
+                case 2: deleteProduct(); break;
+                case 3: searchProduct(); break;
+                case 4: updateProduct(); break;
+                case 5: sortInventory(); break;
+                case 6: pointOfSale(); break;
+                case 7: displayReceipt(); break;
+                case 8:
+                    // Saves RAM back to disk before exiting
+                    saveInventory(); 
+                    System.out.println("Inventory saved. Shutting down the POS. Goodbye!");
+                    break;
+            }
+        } while (choice != 8);
+
+        input.close();
+    }
+
+    // Displays the main menu options
+    public static void displayMenu() {
+        System.out.println("\n===============================");
+        System.out.println("    Bakery Database System");
+        System.out.println("===============================");
+        System.out.println("1. Add Product");
+        System.out.println("2. Delete Product");
+        System.out.println("3. Search Product");
+        System.out.println("4. Update Product");
+        System.out.println("5. Sort Inventory");
+        System.out.println("6. Point of Sale (Checkout)");
+        System.out.println("7. Display Receipt");
+        System.out.println("8. Save & Exit");
+        System.out.println("===============================");
+    }
+
+    // ==========================================
+    // DATABASE OPERATIONS 
+    // ==========================================
+
+    // Adds a new product to the inventory ArrayList
+    public static void addProduct() {
+        System.out.println("\n--- ADD NEW PRODUCT ---");
+        // IDs must be positive integers between 1 and 999999
+        int id = getInt("Enter new ID Number: ", 1, 999999);
+        
+        // Checks if the ID is already taken
+        if (findProductById(id) != null) {
+            System.out.println("A product with ID " + id + " already exists.");
+            return;
+        }
+
+        // Grabs details using error-trapped methods
+        String name = getString("Enter Product Name: ");
+        int qty = getInt("Enter Quantity: ", 0, 10000); 
+        double price = getDouble("Enter Price: $", 0.0, 10000.0); 
+        String desc = getString("Enter Description: ");
+
+        // Adds the new object to the list
+        inventory.add(new Product(id, name, desc, qty, price));
+        System.out.println("Product successfully added!");
+    }
+
+    // Removes a product from the inventory based on its ID
+    public static void deleteProduct() {
+        System.out.println("\n--- DELETE PRODUCT ---");
+        int id = getInt("Enter ID of product to delete: ", 1, 999999);
+        
+        Product p = findProductById(id);
+        if (p != null) {
+            inventory.remove(p);
+            System.out.println("Item " + id + " (" + p.getName() + ") has been deleted.");
+        } else {
+            System.out.println("Item " + id + " was not found.");
+        }
+    }
+
+    // Finds a product and prints its details to the screen
+    public static void searchProduct() {
+        System.out.println("\n--- SEARCH PRODUCT ---");
+        int id = getInt("Enter ID to search for: ", 1, 999999);
+        
+        Product p = findProductById(id);
+        if (p != null) {
+            System.out.println("\n--- Item Found ---");
+            System.out.println("ID: " + p.getId());
+            System.out.println("Name: " + p.getName());
+            System.out.println("Quantity: " + p.getQuantity());
+            System.out.println("Price: $" + String.format("%.2f", p.getPrice()));
+            System.out.println("Description: " + p.getDescription());
+        } else {
+            System.out.println("Item " + id + " was not found in the database.");
+        }
+    }
+
+    // Updates the fields of an existing product
+    public static void updateProduct() {
+        System.out.println("\n--- UPDATE PRODUCT ---");
+        int id = getInt("Enter ID of product to update: ", 1, 999999);
+        
+        Product p = findProductById(id);
+        if (p != null) {
+            System.out.println("Editing: " + p.getName());
+            // Overwrites old data using setter methods
+            p.setName(getString("Enter new Name: "));
+            p.setQuantity(getInt("Enter new Quantity: ", 0, 10000));
+            p.setPrice(getDouble("Enter new Price: $", 0.0, 10000.0));
+            p.setDescription(getString("Enter new Description: "));
+            System.out.println("Product successfully updated!");
+        } else {
+            System.out.println("Item " + id + " was not found.");
+        }
+    }
+
+    // Helper method to find an object in the ArrayList using a for-each loop
+    private static Product findProductById(int id) {
+        for (Product p : inventory) {
+            if (p.getId() == id) {
+                return p;
+            }
+        }
+        return null; // Returns null if no match is found
+    }
+
+    // ==========================================
+    // SORTING & DISPLAY 
+    // ==========================================
+
+    // Sorts the inventory list based on user criteria
+    public static void sortInventory() {
+        System.out.println("\n--- SORT INVENTORY ---");
+        System.out.println("1. Sort by ID Number");
+        System.out.println("2. Sort by Quantity");
+        System.out.println("3. Sort by Price");
+        
+        int criteria = getInt("Choose sort field (1-3): ", 1, 3);
+
+        System.out.println("\n1. Ascending (Low to High)");
+        System.out.println("2. Descending (High to Low)");
+        int order = getInt("Choose sort order (1-2): ", 1, 2);
+        
+        boolean ascending = (order == 1);
+
+        // Uses Lambda expressions to sort the ArrayList dynamically
+        switch (criteria) {
+            case 1:
+                inventory.sort((p1, p2) -> ascending ? Integer.compare(p1.getId(), p2.getId()) : Integer.compare(p2.getId(), p1.getId()));
+                break;
+            case 2:
+                inventory.sort((p1, p2) -> ascending ? Integer.compare(p1.getQuantity(), p2.getQuantity()) : Integer.compare(p2.getQuantity(), p1.getQuantity()));
+                break;
+            case 3:
+                inventory.sort((p1, p2) -> ascending ? Double.compare(p1.getPrice(), p2.getPrice()) : Double.compare(p2.getPrice(), p1.getPrice()));
+                break;
+        }
+        System.out.println("Inventory sorted successfully! Check 'Point of Sale' to view.");
+    }
+
+    // Prints all inventory items in a formatted table
+    public static void displayInventory() {
+        System.out.println("\n-------------------------------------------------------------");
+        System.out.printf("%-8s %-20s %-8s %-8s %-15s\n", "ID", "Product Name", "Qty", "Price", "Description");
+        System.out.println("-------------------------------------------------------------");
+
+        for (Product p : inventory) {
+            System.out.printf("%-8d %-20s %-8d $%-7.2f %-15s\n", 
+                p.getId(), p.getName(), p.getQuantity(), p.getPrice(), p.getDescription());
+        }
+        System.out.println("-------------------------------------------------------------");
+    }
+
+    // ==========================================
+    // POINT OF SALE & RECEIPT 
+    // ==========================================
+
+    // Handles customer checkout and deducts items from inventory
+    public static void pointOfSale() {
+        currentCart.clear(); // Flushes the cart for a new transaction
+
+        if (inventory.isEmpty()) {
+            System.out.println("There are no products in the inventory.");
+            return;
+        }
+
+        boolean keepShopping = true;
+
+        System.out.println("\n===============================");
+        System.out.println("        POINT OF SALE");
+        System.out.println("===============================");
+
+        displayInventory();
+
+        while (keepShopping) {
+            // Allows 0 to trigger the loop cancel condition
+            int productId = getInt("Enter the product ID or enter 0 to finish: ", 0, 999999);
+
+            if (productId == 0) {
+                break;
+            }
+
+            Product product = findProductById(productId);
+
+            // Stock validation checks
+            if (product == null) {
+                System.out.println("Product " + productId + " was not found.");
+            } else if (product.getQuantity() == 0) {
+                System.out.println(product.getName() + " is out of stock.");
+            } else {
+                System.out.println("\nProduct: " + product.getName());
+                System.out.println("Available: " + product.getQuantity());
+                System.out.printf("Price: $%.2f%n", product.getPrice());
+
+                int quantityBought = getInt("Enter the quantity being purchased: ", 0, 10000);
+
+                if (quantityBought == 0) {
+                    System.out.println("The product was not added to the cart.");
+                } else if (quantityBought > product.getQuantity()) {
+                    System.out.println("There is not enough stock. Only " + product.getQuantity() + " available.");
+                } else {
+                    // Temporarily deducts stock and adds to cart
+                    int oldQuantity = product.getQuantity();
+                    int newQuantity = oldQuantity - quantityBought;
+                    product.setQuantity(newQuantity);
+
+                    try {
+                        // Saves progress to disk in case of power failure
+                        saveInventory();
+                        SaleItem item = new SaleItem(product.getId(), product.getName(), quantityBought, product.getPrice());
+                        currentCart.add(item);
+
+                        double itemTotal = quantityBought * product.getPrice();
+                        System.out.println(quantityBought + " " + product.getName() + " item(s) added to the cart.");
+                        System.out.printf("Item total: $%.2f%n", itemTotal);
+                    } catch (Exception e) {
+                        // Reverts inventory if the save failed
+                        product.setQuantity(oldQuantity);
+                        System.out.println("The sale could not be saved.");
+                    }
+                }
+            }
+
+            // Checks if the user wants to buy more items
+            String answer = getString("\nPurchase another product? Enter yes or no: ");
+            while (!answer.equalsIgnoreCase("yes") && !answer.equalsIgnoreCase("no")) {
+                System.out.println("Please enter yes or no.");
+                answer = getString("Purchase another product? Enter yes or no: ");
+            }
+
+            if (answer.equalsIgnoreCase("no")) {
+                keepShopping = false;
+            }
+        }
+
+        if (currentCart.isEmpty()) {
+            System.out.println("\nNo products were purchased.");
+        } else {
+            System.out.println("\nSale completed. Choose 'Display Receipt' from the main menu.");
+        }
+    }
+
+    // Calculates totals and prints the formatted receipt
+    public static void displayReceipt() {
+        if (currentCart == null || currentCart.isEmpty()) {
+            System.out.println("No items in the cart. Start a 'Point of Sale' session first.");
+            return;
+        }
+
+        double subtotal = 0.0;
+        StringBuilder receipt = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String timestamp = LocalDateTime.now().format(formatter); // Gets current time
+
+        // Builds the receipt header
+        receipt.append("\n=============================================\n");
+        receipt.append("            LITTLE OVEN BAKERY\n");
+        receipt.append("=============================================\n");
+        receipt.append("Date: ").append(timestamp).append("\n");
+        receipt.append("---------------------------------------------\n");
+        receipt.append(String.format("%-6s %-18s %-4s %-8s %-8s\n", "ID", "Item", "Qty", "Price", "Total"));
+        receipt.append("---------------------------------------------\n");
+
+        // Loops through cart and adds items to receipt
+        for (SaleItem item : currentCart) {
+            double lineTotal = item.quantitySold * item.price;
+            subtotal += lineTotal;
+            receipt.append(String.format("%-6d %-18s %-4d $%-7.2f $%-7.2f\n",
+                    item.id, item.description, item.quantitySold, item.price, lineTotal));
+        }
+
+        // Calculates taxes and final total
+        double tax = subtotal * TAX_RATE;
+        double total = subtotal + tax;
+
+        // Builds the receipt footer
+        receipt.append("---------------------------------------------\n");
+        receipt.append(String.format("%-36s $%.2f\n", "Subtotal:", subtotal));
+        receipt.append(String.format("%-36s $%.2f\n", "Tax (13%):", tax));
+        receipt.append(String.format("%-36s $%.2f\n", "TOTAL:", total));
+        receipt.append("=============================================\n");
+        receipt.append("       Thank you for shopping with us!\n");
+        receipt.append("=============================================\n");
+
+        // Prints to console
+        System.out.println(receipt.toString());
+
+        // Appends the receipt to a log file for record keeping
+        try {
+            FileWriter logWriter = new FileWriter("receipt_log.txt", true);
+            logWriter.write(receipt.toString());
+            logWriter.write("\n");
+            logWriter.close();
+        } catch (IOException e) {
+            System.out.println("Could not save receipt log: " + e.getMessage());
+        }
+    }
+
+    // ==========================================
+    // FILE I/O OPERATIONS
+    // ==========================================
+
+    // Reconstructs the inventory from the Bakery.txt file
+    public static void loadInventory() {
+        inventory.clear();
+        try {
+            File file = new File(FILE_NAME);
+            if (!file.exists()) {
+                System.out.println("No existing database found. Creating a new one.");
+                return;
+            }
+
+            Scanner fileInput = new Scanner(file);
+            while(fileInput.hasNextLine()) {
+                String line = fileInput.nextLine();
+                if(line.trim().isEmpty()) continue;
+                
+                // Splits the CSV line into an array
+                String[] record = line.split(",");
+                if(record.length == 5) {
+                    int id = Integer.parseInt(record[0]);
+                    String name = record[1];
+                    int quantity = Integer.parseInt(record[2]);
+                    double price = Double.parseDouble(record[3]);
+                    String description = record[4];
+                    inventory.add(new Product(id, name, description, quantity, price));
+                }
+            }
+            fileInput.close();
+        } catch (Exception e) {
+            System.out.println("Database load failed: " + e.getMessage());
+        }
+    }
+
+    // Overwrites the Bakery.txt file with the active inventory
+    public static void saveInventory() {
+        try {
+            FileWriter writer = new FileWriter(FILE_NAME, false);
+            for(Product p : inventory) {
+                // Formats data as a comma-separated string
+                writer.write(p.getId() + "," + p.getName() + "," + p.getQuantity() + "," + p.getPrice() + "," + p.getDescription() + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Could not save inventory: " + e.getMessage());
+        }
+    }
+
+    // ==========================================
+    // MODULAR ERROR TRAPPING METHODS
+    // ==========================================
+
+    // Traps both Type Errors (Strings instead of Ints) AND Range Errors
+    public static int getInt(String prompt, int min, int max) {
+        int number = 0;
+        boolean valid = false;
+        while (!valid) {
+            try {
+                System.out.print(prompt);
+                number = Integer.parseInt(input.nextLine().trim());
+                if (number >= min && number <= max) {
+                    valid = true;
+                } else {
+                    System.out.println("Please enter a number between " + min + " and " + max + ".");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid data type. Please enter a whole number.");
+            }
+        }
+        return number;
+    }
+
+    // Traps both Type Errors (Strings instead of Doubles) AND Range Errors
+    public static double getDouble(String prompt, double min, double max) {
+        double number = 0.0;
+        boolean valid = false;
+        while (!valid) {
+            try {
+                System.out.print(prompt);
+                number = Double.parseDouble(input.nextLine().trim());
+                if (number >= min && number <= max) {
+                    valid = true;
+                } else {
+                    System.out.println("Please enter a number between " + min + " and " + max + ".");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid data type. Please enter a decimal number.");
+            }
+        }
+        return number;
+    }
+
+    // Traps Empty or Blank Strings so data doesn't get corrupted
+    public static String getString(String prompt) {
+        String text = "";
+        while (text.isEmpty()) {
+            System.out.print(prompt);
+            text = input.nextLine().trim();
+            if (text.isEmpty()) {
+                System.out.println("Input cannot be blank.");
+            }
+        }
+        return text;
+    }
+}
+
+
