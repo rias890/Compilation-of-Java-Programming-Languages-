@@ -1,0 +1,78 @@
+//Name: Ria Shah
+
+//Date: July 7, 2026 
+
+//Assignment Title: Birthday Celebration Program
+
+//Program Description: This program prompts the user to enter their name, age, and the amount of birthday money //they would like. It then displays the entered information, prints the "Happy Birthday" song, and calculates the tax //that must be paid on the birthday money. 
+
+
+import java.util.Scanner;
+
+public class BirthdayCelebrationProgram{ 
+     public static void writehappybday() {
+        System.out.println("Happy Birthday to You");
+        //This method prints one line of the Happy Birthday song
+        //It has no parameters as the line is always the same 
+    }
+    
+    public static void happybdaytouser(String name) {
+        //This method prints the personalized version of the song
+        //The parameter for name allows the user's name to be inserted in the song
+        System.out.println("Happy Birthday dear " + name);
+    }
+    
+    public static double calculateTax(double giftAmount) {
+        //This method calculates 13 percent tax on birthday money
+        //It receives the gift amount as a parameter and returns
+        //the tax is put as double so it is a decimal and not an integer 
+        return giftAmount * 0.13;
+    }
+    
+    public static void main(String[] args){
+        // Creates a Scanner object so the program can read
+        // input typed by the user.
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine(); 
+        //asks for the user's name
+
+        System.out.print("Enter your age: ");
+        int age = scanner.nextInt(); 
+        //asks for the user's age
+        //nextInt() reads an integer from the keyboard
+
+        System.out.print("How much money you want for your birthday: ");
+        double bdayamount = scanner.nextDouble(); 
+        //asks for how much money the user wants 
+        //nextDouble() allows decimal values to be entered
+        
+        double tax = calculateTax(bdayamount);
+        //Call the calculateTax() method and store the returned value
+        //tax value in the variable "tax".
+        //calculates the tax and uses double so it is not an integer
+        
+        writehappybday();
+        writehappybday();
+        happybdaytouser(name);
+        writehappybday();
+        //sings happy birthday 
+        
+         System.out.println("\nName: " + name);
+         //prints out the name
+         System.out.println("Age: " + age);
+         //prints out the age 
+         System.out.printf("Birthday money requested: $%.2f%n", bdayamount);
+         //prints the birthday amount
+         //%.2f formats a decimal number to exactly two digits after the decimal point.
+         //%n creates a new line.
+         System.out.printf("Tax: $%.2f%n", tax);
+         //prints the tax to two places
+    
+        scanner.close();
+        //ends the code 
+    }
+
+}
+
