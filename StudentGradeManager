@@ -1,0 +1,343 @@
+/*
+ * Name: Ria Shah 
+ * Assignment: Student Grade Manager
+ * Date: July 20, 2026 
+ *
+ * Description: This program allows teachers to enter information about their students such
+ * as their name, grade and outputs: student information, highest/lowest grade, the class 
+ * average, who passed or failed, allows teachers to search, sorts the grades, and allows teachers
+ * to enter or re-enter the student's information. 
+ *
+ * Update based on teacher feedback:
+ * - Added exception handling for grade entry and menu selection so the program
+ *   doesn't crash when the user enters non-numeric values
+ */
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class StudentGradeManager
+{
+    static Scanner input = new Scanner(System.in);
+    //creates a scanner object that allows users  to enter information 
+
+    public static void main(String[] args)
+    {
+        System.out.print("How many students are in the class? ");//asks the user how many students are in the class 
+
+        //Checks that the user enters a valid number instead of letters
+        while(!input.hasNextInt())
+        {
+            System.out.println("Invalid input. Please enter a number of students.");
+            input.next(); //clears the invalid input
+            System.out.print("How many students are in the class? ");
+        }
+
+        int numofStudents = input.nextInt();//allows the user to enter the number of students 
+
+        //Checks that the number of students is greater than zero
+        while(numofStudents <= 0)
+        {
+            System.out.println("Invalid number. Please enter at least 1 student.");
+            System.out.print("How many students are in the class? ");//asks the user to enter a valid number 
+
+            while(!input.hasNextInt()) //keep prompting the user until they enter a valid integer for the number of students.
+            {
+                System.out.println("Invalid input. Please enter a number of students.");
+                input.next(); //discard the invalid input
+                System.out.print("How many students are in the class? ");
+            }
+
+            numofStudents = input.nextInt();
+        }
+
+        input.nextLine(); //clears newline
+
+        String[] Studentnames = new String[numofStudents]; //creates a string array called student names
+        double[] grades = new double[numofStudents]; //creates number array of students' grades 
+
+        //enter student information
+        enterStudentData(Studentnames, grades);
+
+        int choice;
+
+        do //displays the menu and gets the user's choice 
+        {
+            displayMenu();
+            choice = getMenuChoice(); //this method reads the menu choice and catches non-numeric input
+
+            switch(choice)
+            {
+                case 1:
+                    displayStudents(Studentnames, grades);
+                    break;
+                    //if the user enters one then this will display the student's name and grade
+
+                case 2:
+                    displayHighestLowest(Studentnames, grades);
+                    //if the user enters two then this will display the highest and lowest grades 
+                    break;
+
+                case 3:
+                    displayAverage(grades);
+                    //if the user enters three this will return the class average 
+                    break;
+
+                case 4:
+                    displayPassFail(Studentnames, grades);
+                    //if the user enters four this will return who passed and failed the course
+                    break;
+
+                case 5:
+                    searchStudent(Studentnames, grades);
+                    //if the user enters five this will allow the teacher to search for a student
+                    break;
+
+                case 6:
+                    sortStudents(Studentnames, grades);
+                    //if the user enters six this will sort the grades in the class 
+                    displayStudents(Studentnames, grades);
+                    break;
+
+                case 7:
+                    input.nextLine(); // Clears newline before re-entering data
+                    enterStudentData(Studentnames, grades);
+                    // if the user enter seven this will allow the teacher to reenter the student's data 
+                    System.out.println("Student information updated.");
+                    break;
+
+                case 8:
+                    System.out.println("\nThank you for using the Student Grade Manager!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    //if the user enters anything that is invalid it will allow the user to try again 
+            }
+
+        } while(choice != 8); //while the choice is not equal to eight the code will do the following
+    }
+
+    public static void enterStudentData(String[] Studentnames, double[] grades)
+    {
+        System.out.println("\nEnter Student Information"); //asks the teacher to enter student info
+
+        for(int i = 0; i < Studentnames.length; i++) //this for loop loops through each student position in the array and stores the student's name
+        {
+            System.out.print("\nStudent " + (i + 1) + " Name: ");
+            Studentnames[i] = input.nextLine();
+
+            grades[i] = getValidGrade(); //this method asks for the grade and catches non-numeric input
+        }
+    }
+
+    //asks for a grade between 0 and 100, re-prompting on invalid range or non-numeric input
+    public static double getValidGrade()
+    {
+        double grade = -1;
+        boolean validInput = false;
+        //this flag tells the loop when a good grade has finally been entered
+
+        while(!validInput)
+        {
+            System.out.print("Grade (0-100): ");
+
+            try
+            {
+                grade = input.nextDouble(); //the grade is read as a number
+                input.nextLine(); //clears the leftover newline
+
+                if(grade < 0 || grade > 100) //checks whether the grade is between 0 and 100 
+                {
+                    System.out.println("Invalid grade. Enter a value between 0 and 100.");
+                }
+                else
+                {
+                    validInput = true;
+                    //if the grade is in range, we can stop looping
+                }
+            }
+            catch(InputMismatchException e)
+            {
+                System.out.println("Invalid input. Please enter a number.");
+                //this runs if the user types something that isn't a number, like a letter
+                input.nextLine();
+                //clears the bad input so the scanner doesn't get stuck re-reading it
+            }
+        }
+
+        return grade;
+    }
+
+    //reads the menu choice and catches non-numeric input so the program doesn't crash
+    public static int getMenuChoice()
+    {
+        while(true)
+        {
+            try
+            {
+                return input.nextInt();
+                //tries to read the menu choice as a number
+            }
+            catch(InputMismatchException e)
+            {
+                System.out.println("Invalid choice. Please enter a number.");
+                //this runs if the user types something that isn't a number
+                input.nextLine();
+                //clears the bad input so the scanner doesn't get stuck
+                displayMenu();
+                //shows the menu again so the user can see their options
+            }
+        }
+    }
+
+    public static void displayMenu()
+    {
+        System.out.println(" Student Grade Manager");
+        System.out.println("1. Display all students");
+        System.out.println("2. Display highest and lowest grades");
+        System.out.println("3. Display average grade");
+        System.out.println("4. Display passed and failed students");
+        System.out.println("5. Search for a student");
+        System.out.println("6. Sort grades in ascending order");
+        System.out.println("7. Re-enter student grades");
+        System.out.println("8. Exit");
+        System.out.print("Enter your choice: ");
+    }//these lines of code output the menu 
+    
+        public static void displayStudents(String[] Studentnames, double[] grades)
+    {
+        System.out.println("\nStudent List");
+
+        for(int i = 0; i < Studentnames.length; i++)
+        {
+            System.out.printf("%-20s %.1f%n", Studentnames[i], grades[i]);
+            //loops through the arrays and prints out each of the student's information 
+        }
+    }
+
+    public static void displayHighestLowest(String[] names, double[] grades)
+    {
+        int highest = 0;
+        int lowest = 0;
+
+        for(int i = 1; i < grades.length; i++) //checks to see if the previous grade was higher than the first 
+        {
+            if(grades[i] > grades[highest])
+            {
+                highest = i;//sets the highest grade to highest 
+            }
+
+            if(grades[i] < grades[lowest])//checks to see if the previous grade was lower than the first 
+            {
+                lowest = i;//sets the lowest grade to lowest 
+            }
+        }
+
+        System.out.println("\nHighest Grade:");
+        System.out.println(names[highest] + " : " + grades[highest]); //prints out the highest grade
+
+        System.out.println("\nLowest Grade:");
+        System.out.println(names[lowest] + " : " + grades[lowest]);//prints out the lowest grade 
+    }
+
+    public static void displayAverage(double[] grades)
+    {
+        double total = 0; //sets the total initially to 0 
+
+        for(int i = 0; i < grades.length; i++) //runs through the for loop and adds all of the grades to total 
+        {
+            total += grades[i];
+        }
+
+        double average = total / grades.length; //divides the total by the length of the array in grades 
+
+        System.out.printf("\nClass Average: %.2f%n", average);
+    }
+
+    public static void searchStudent(String[] names, double[] grades)
+    {
+        input.nextLine();
+
+        System.out.print("\nEnter student's name: "); //asks the teacher to enter a student's name 
+        String search = input.nextLine();
+
+        boolean found = false; //keeps track of whether the searched student was found in the array
+
+        for(int i = 0; i < names.length; i++) //lops through all students to compare their names with the search input
+        {
+            if(names[i].equalsIgnoreCase(search)) //checks if the current student's name matches the searched name (ignores capitalization)
+            {
+                System.out.println(names[i] + "'s grade is " + grades[i]); //prints out the student's info 
+                found = true;
+            }
+        }
+
+        if(!found)
+        {
+            System.out.println("Student not found.");//if found is false then it writes student is not found 
+        }
+    }
+
+    public static void sortStudents(String[] names, double[] grades)
+    { 
+        //uses bubble sort to arrange students from lowest grade to highest grade
+        //both the names and grades arrays are sorted together so students keep their correct grades
+
+        for(int pass = 0; pass < grades.length - 1; pass++)
+        {  
+            //compares neighboring grades during each pass through the array
+
+            for(int i = 0; i < grades.length - 1 - pass; i++)
+            {
+                //checks if the current grade is greater than the next grade
+
+                if(grades[i] > grades[i + 1])
+                { 
+                    //swaps the grades to put them in ascending order using a temporary variable 
+
+                    double tempGrade = grades[i];
+                    grades[i] = grades[i + 1];
+                    grades[i + 1] = tempGrade;
+
+                    String tempName = names[i];
+                    names[i] = names[i + 1];
+                    names[i + 1] = tempName; //swaps the names so each student stays matched with their grade
+                }
+            }
+        }
+
+        System.out.println("\nStudents sorted by grade.");
+    }
+
+    public static void displayPassFail(String[] names, double[] grades)
+    {
+        int passed = 0;
+        int failed = 0;
+
+        System.out.println("\nPassed Students:");
+
+        for(int i = 0; i < grades.length; i++) //iterates through the grades 
+        {
+            if(grades[i] >= 50)
+            {
+                System.out.println(names[i] + " : " + grades[i]); //if the grade is greater than 50 it writes pass 
+                passed++;
+            }
+        }
+
+        System.out.println("\nFailed Students:");
+
+        for(int i = 0; i < grades.length; i++)
+        {
+            if(grades[i] < 50) //if the grade is less than 50 it writes failed
+            {
+                System.out.println(names[i] + " : " + grades[i]);
+                failed++;
+            }
+        }
+
+        System.out.println("\nTotal Passed: " + passed); //writes the total number of people who passed 
+        System.out.println("Total Failed: " + failed);//writes the total number of people who failed 
+    }
+}
