@@ -1,0 +1,641 @@
+//MAIN
+
+/*
+Assignment Title: Shape Calculator
+Name: Ria Shah
+Course: ICS4U
+Date: July 22, 2026 
+Teacher's Name: Mr. Hynes
+Purpose:
+This program calculates the circumference,
+perimeter, area, surface area, and volume
+of various 2D and 3D shapes.
+
+*/
+
+
+import java.util.Scanner;
+
+public class ShapeCalc
+{
+	// stores past calculation results so they can be viewed later 
+	private static String[] history = new String[100];
+	private static int historyCount = 0;
+
+	public static void main(String[] args)
+	{
+		ShapeMethods ShapeMethods = new ShapeMethods();//creates a variable for shape methods class
+
+		Scanner input = new Scanner(System.in);//creates a scanner item to take in inputs
+
+		int choice; //creates a variable choice to prompt the user
+		
+		// Stores previous calculations 
+    
+
+		//array of shape names
+		String[] shapes =
+		{
+			"Circle",
+			"Rectangle",
+			"Square",
+			"Equilateral Triangle",
+			"Isosceles Triangle",
+			"Right Triangle",
+			"Rectangular Prism",
+			"Triangular Prism",
+			"Cuboid"
+		};
+
+		System.out.println("      WELCOME TO SHAPE CALCULATOR");
+
+		do
+		{	//display the main menu title
+			System.out.println("\nMain Menu");
+			//loop through the shapes array and display each shape with a number
+			for(int i = 0; i < shapes.length; i++)
+			{
+				System.out.println((i + 1) + ". " + shapes[i]);
+			}
+			 System.out.println("10. Shape Information");
+			 System.out.println("11. View Calculation History");
+			 System.out.println("12. Exit");
+
+
+			//asks the user to choose a shape
+			System.out.print("\nEnter your choice: ");
+
+			while(!input.hasNextInt()) //checks if the user entered a number
+			{
+				System.out.print("Invalid input. Please enter a number: ");
+				input.next(); //removes the invalid input eg letters
+			}
+
+			choice = input.nextInt();//stores the user's menu choice
+
+
+			while(choice < 1 || choice > 12)  //make sures the choice is between 1 and 10
+			{
+				System.out.print("Invalid choice. Enter a number between 1 and 12: ");
+
+				while(!input.hasNextInt()) //checks that the retry is actually a number too, so a letter here can't crash the program
+				{
+					System.out.print("Invalid input. Please enter a number: ");
+					input.next();
+				}
+
+				choice = input.nextInt();//if the user's number is not between 1 and 10 print invalid input
+			}
+
+			switch(choice) //uses a switch statement to run the correct calculation method
+
+			{
+			case 1:
+				calculateCircle(input); //calls the method to calculate circle measurements
+				break;
+
+			case 2:
+				calculateRectangle(input); //calls the method to calculate rectangle measurements
+				break;
+
+			case 3:
+				calculateSquare(input); //calls the method to calculate square measurements
+				break;
+
+			case 4:
+				calculateEquilateralTriangle(input); //calls the method to calculate equilateral triangle measurements
+				break;
+
+			case 5:
+				calculateIsoscelesTriangle(input); //calls the method to calculate isosceles triangle measurements
+				break;
+
+			case 6:
+				calculateRightTriangle(input);//calls the method to calculate right triangle
+				break;
+
+			case 7:
+				calculateRectangularPrism(input); //calls the method to calculate rectangular prism
+				break;
+
+			case 8:
+				calculateTriangularPrism(input);//calls the method to calculate triangular prism
+				break;
+
+			case 9:
+				calculateCuboid(input); //calls the method to calculate cuboid
+				break;
+				
+		
+            case 10:
+                displayShapeInformation();
+                break;
+
+
+                
+            case 11:
+                displayHistory();
+                break;
+
+
+			case 12:
+				//ends the program
+				System.out.println("\nThank you for using the Shape Calculator!");
+				break;
+			}
+
+		} while(choice != 12); //repeats the menu until the user chooses option 12 (Exit)
+
+		input.close(); //closes scanner
+
+
+	}
+
+	public static void calculateCircle(Scanner input)
+	{
+		double radius; //creates radius variable
+
+		System.out.println("Circle");
+
+		System.out.print("Enter the input unit (cm, m, in): "); //asks for unit input
+		String inputUnit = getValidUnit(input);
+
+		radius = getPositiveDouble(input, "Enter the radius: ");//asks for the radius
+
+		System.out.print("Enter the output unit (cm, m, in): "); //asks for desired output unit
+		String outputUnit = getValidUnit(input);
+
+		// convert radius to cm
+		radius = convertToCm(radius, inputUnit);
+
+		// calculate area and circumference in ShapeMethods
+		double area = ShapeMethods.circleArea(radius);
+		double circumference = ShapeMethods.circleCircumference(radius);
+
+		// convert results to desired output unit
+		area = convertArea(area, outputUnit);
+		circumference = convertLength(circumference, outputUnit);
+
+		System.out.printf("Area: %.6f %s²\n", area, outputUnit); //prints out area
+		System.out.printf("Circumference: %.6f %s\n", circumference, outputUnit); //prints out circumference
+
+		addHistory(String.format("Circle -> Area: %.6f %s², Circumference: %.6f %s",
+		                          area, outputUnit, circumference, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateRectangle(Scanner input)
+	{
+		double length, width; //creates length and width variables
+
+		System.out.println("Rectangle");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input); //asks for input measurement
+
+		length = getPositiveDouble(input, "Enter the length: "); //asks for length
+		width = getPositiveDouble(input, "Enter the width: ");//asks for width
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for desired output unit
+
+		// convert measurements to cm
+		length = convertToCm(length, inputUnit);
+		width = convertToCm(width, inputUnit);
+
+		// calculate area and perimter in ShapeMethods
+		double area = ShapeMethods.rectangleArea(length, width);
+		double perimeter = ShapeMethods.rectanglePerimeter(length, width);
+
+		// convert results
+		area = convertArea(area, outputUnit);
+		perimeter = convertLength(perimeter, outputUnit);
+
+		System.out.printf("Area: %.6f %s²\n", area, outputUnit); //print area
+		System.out.printf("Perimeter: %.6f %s\n", perimeter, outputUnit); //print perimeter
+
+		addHistory(String.format("Rectangle -> Area: %.6f %s², Perimeter: %.6f %s",
+		                          area, outputUnit, perimeter, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateSquare(Scanner input)
+	{
+		double side; //side length variable
+
+		System.out.println("Square");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input); //asks for input measurement
+
+		side = getPositiveDouble(input, "Enter the side length: "); //asks for side length
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for desired output measurement
+
+		// convert side length to cm
+		side = convertToCm(side, inputUnit);
+
+		// calculate area and perimeter
+		double area = ShapeMethods.squareArea(side);
+		double perimeter = ShapeMethods.squarePerimeter(side);
+
+		// convert results
+		area = convertArea(area, outputUnit);
+		perimeter = convertLength(perimeter, outputUnit);
+
+		System.out.printf("Area: %.6f %s²\n", area, outputUnit); //prints out area
+		System.out.printf("Perimeter: %.6f %s\n", perimeter, outputUnit); //prints out perimeter
+
+		addHistory(String.format("Square -> Area: %.6f %s², Perimeter: %.6f %s",
+		                          area, outputUnit, perimeter, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateEquilateralTriangle(Scanner input)
+	{
+		double side; //asks for side length
+
+		System.out.println("Equilateral Triangle");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input); //asks for input measurement
+
+		side = getPositiveDouble(input, "Enter the side length: "); //asks for side length
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for desired output measurement
+
+		// convert side length to cm
+		side = convertToCm(side, inputUnit);
+
+		// calculate area and perimeter
+		double area = ShapeMethods.equilateralArea(side);
+		double perimeter = ShapeMethods.equilateralPerimeter(side);
+
+		// convert results
+		area = convertArea(area, outputUnit);
+		perimeter = convertLength(perimeter, outputUnit);
+
+		System.out.printf("Area: %.6f %s²\n", area, outputUnit); //print area
+		System.out.printf("Perimeter: %.6f %s\n", perimeter, outputUnit); //print perimeter
+
+		addHistory(String.format("Equilateral Triangle -> Area: %.6f %s², Perimeter: %.6f %s",
+		                          area, outputUnit, perimeter, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateIsoscelesTriangle(Scanner input)
+	{
+		double equalSide, base, height; //creates side, base and height variables
+
+		System.out.println("Isosceles Triangle");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input); //asks for input measurement
+
+		equalSide = getPositiveDouble(input, "Enter the equal side: "); //asks for the side
+		base = getPositiveDouble(input, "Enter the base: ");//asks for the base
+		height = getPositiveDouble(input, "Enter the height: "); //asks for height
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for desired output measurement
+
+		// convert measurements to cm
+		equalSide = convertToCm(equalSide, inputUnit);
+		base = convertToCm(base, inputUnit);
+		height = convertToCm(height, inputUnit);
+
+		// calculate area and perimetr
+		double area = ShapeMethods.isoscelesArea(base, height);
+		double perimeter = ShapeMethods.isoscelesPerimeter(equalSide, base);
+
+		// convert results
+		area = convertArea(area, outputUnit);
+		perimeter = convertLength(perimeter, outputUnit);
+
+		System.out.printf("Area: %.6f %s²\n", area, outputUnit); //prints area
+		System.out.printf("Perimeter: %.6f %s\n", perimeter, outputUnit);//prints perimeter
+
+		addHistory(String.format("Isosceles Triangle -> Area: %.6f %s², Perimeter: %.6f %s",
+		                          area, outputUnit, perimeter, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateRightTriangle(Scanner input)
+	{
+		double base, height; //creates base and height variables
+
+		System.out.println("Right Triangle");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input); //asks for input measurement
+
+		base = getPositiveDouble(input, "Enter the base: "); //asks for the base
+		height = getPositiveDouble(input, "Enter the height: "); //asks for the height
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for desired output measurement
+
+		// convert measurements to cm
+		base = convertToCm(base, inputUnit);
+		height = convertToCm(height, inputUnit);
+
+		// calculate area and perimeter
+		double area = ShapeMethods.rightTriangleArea(base, height);
+		double perimeter = ShapeMethods.rightTrianglePerimeter(base, height);
+
+		// convert results
+		area = convertArea(area, outputUnit);
+		perimeter = convertLength(perimeter, outputUnit);
+
+		System.out.printf("Area: %.6f %s²\n", area, outputUnit); //print area
+		System.out.printf("Perimeter: %.6f %s\n", perimeter, outputUnit);//print perimeter
+
+		addHistory(String.format("Right Triangle -> Area: %.6f %s², Perimeter: %.6f %s",
+		                          area, outputUnit, perimeter, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateRectangularPrism(Scanner input)
+	{
+		double length, width, height; //creates length, width, height variables
+
+		System.out.println("Rectangular Prism");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input); //asks for input measurement
+
+		length = getPositiveDouble(input, "Enter the length: "); //asks for length
+		width = getPositiveDouble(input, "Enter the width: "); //asks for width
+		height = getPositiveDouble(input, "Enter the height: "); //asks for height
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for desired output measurement
+
+		// convert measurements to cm
+		length = convertToCm(length, inputUnit);
+		width = convertToCm(width, inputUnit);
+		height = convertToCm(height, inputUnit);
+
+		// calculate surface area and volume
+		double surfaceArea = ShapeMethods.rectangularPrismSurfaceArea(length, width, height);
+		double volume = ShapeMethods.rectangularPrismVolume(length, width, height);
+
+		// convert results
+		surfaceArea = convertArea(surfaceArea, outputUnit);
+		volume = convertVolume(volume, outputUnit);
+
+		System.out.printf("Surface Area: %.6f %s²\n", surfaceArea, outputUnit); //print surface
+		System.out.printf("Volume: %.6f %s³\n", volume, outputUnit); //print volume
+
+		addHistory(String.format("Rectangular Prism -> Surface Area: %.6f %s², Volume: %.6f %s³",
+		                          surfaceArea, outputUnit, volume, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateTriangularPrism(Scanner input)
+	{
+		double base, height, side1, side2, prismLength; //creates base, height, sides, length variables
+
+		System.out.println("Triangular Prism");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input);//asks for input measurement
+
+		base = getPositiveDouble(input, "Enter triangle base: "); //asks for triangle base
+		height = getPositiveDouble(input, "Enter triangle height: "); //asks for triangle height
+		side1 = getPositiveDouble(input, "Enter side 1: "); //asks for side 1
+		side2 = getPositiveDouble(input, "Enter side 2: "); //asks for side 2
+		prismLength = getPositiveDouble(input, "Enter prism length: "); //asks for prism length
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for desired output measurement
+
+		// convert measurements to cm
+		base = convertToCm(base, inputUnit);
+		height = convertToCm(height, inputUnit);
+		side1 = convertToCm(side1, inputUnit);
+		side2 = convertToCm(side2, inputUnit);
+		prismLength = convertToCm(prismLength, inputUnit);
+
+		// calculate surface area
+		double surfaceArea = ShapeMethods.triangularPrismSurfaceArea(
+		                         base, height, side1, side2, prismLength
+		                     );
+
+		//calculate volume
+		double volume = ShapeMethods.triangularPrismVolume(
+		                    base, height, prismLength
+		                );
+
+		// convert results
+		surfaceArea = convertArea(surfaceArea, outputUnit);
+		volume = convertVolume(volume, outputUnit);
+
+		System.out.printf("Surface Area: %.6f %s²\n", surfaceArea, outputUnit); //print out surface area
+		System.out.printf("Volume: %.6f %s³\n", volume, outputUnit); //print out volume
+
+		addHistory(String.format("Triangular Prism -> Surface Area: %.6f %s², Volume: %.6f %s³",
+		                          surfaceArea, outputUnit, volume, outputUnit)); //saves this result to history
+	}
+
+	public static void calculateCuboid(Scanner input)
+	{
+		double side; // creates side length variable
+
+		System.out.println("\n----- Cuboid -----");
+
+		System.out.print("Enter the input unit (cm, m, in): ");
+		String inputUnit = getValidUnit(input);//asks for input measurement
+
+		side = getPositiveDouble(input, "Enter the side length: "); // asks for side length
+
+		System.out.print("Enter the output unit (cm, m, in): ");
+		String outputUnit = getValidUnit(input); //asks for the desired output unit
+
+		// convert measurements to cm
+		side = convertToCm(side, inputUnit);
+
+		// calculate surface area and volume
+		double surfaceArea = ShapeMethods.cubeSurfaceArea(side);
+		double volume = ShapeMethods.cubeVolume(side);
+
+		// convert results
+		surfaceArea = convertArea(surfaceArea, outputUnit);
+		volume = convertVolume(volume, outputUnit);
+
+		System.out.printf("Surface Area: %.6f %s²\n", surfaceArea, outputUnit); //print surface area
+		System.out.printf("Volume: %.6f %s³\n", volume, outputUnit); //print volume
+
+		addHistory(String.format("Cuboid -> Surface Area: %.6f %s², Volume: %.6f %s³",
+		                          surfaceArea, outputUnit, volume, outputUnit)); //saves this result to history
+	}
+
+	public static String getValidUnit(Scanner input)
+	{
+		String unit; //stores the measurement unit entered by the user
+
+		do
+		{
+			unit = input.next(); //gets the user's unit input
+
+			if(!unit.equalsIgnoreCase("cm") && //checks if the unit entered is not cm, m, or in
+			        !unit.equalsIgnoreCase("m") &&
+			        !unit.equalsIgnoreCase("in"))
+			{
+				System.out.print("Invalid unit. Enter cm, m, or in: "); //asks the user to enter a valid unit
+			}
+
+		} while(!unit.equalsIgnoreCase("cm") &&
+		        !unit.equalsIgnoreCase("m") &&
+		        !unit.equalsIgnoreCase("in")); //repeats until a valid unit is entered
+
+
+		return unit; //returns the valid measurement unit
+	}
+
+	public static double convertToCm(double value, String unit) //converts value to cm first
+	{
+		if(unit.equalsIgnoreCase("in"))
+		{
+			return value * 2.54; //if the user puts in inches it converts the unit to cm
+		}
+		else if(unit.equalsIgnoreCase("m"))
+		{
+			return value * 100; //if the user puts in meters it converts the unit to cm
+		}
+		else
+		{
+			return value; // already cm
+		}
+	}
+
+
+	public static double convertLength(double value, String unit)
+	{
+		if(unit.equalsIgnoreCase("in"))
+		{
+			return value / 2.54; //if the user wants inches it converts cm to in
+		}
+		else if(unit.equalsIgnoreCase("m")) //if the user wants m it converts cm to m
+		{
+			return value / 100;
+		}
+		else
+		{
+			return value;
+		}
+
+	}
+
+	public static double convertArea(double value, String unit)
+	{
+		if(unit.equalsIgnoreCase("in"))
+		{
+			return value / (2.54 * 2.54); //for area it converts square inches to cm
+		}
+		else if(unit.equalsIgnoreCase("m"))
+		{
+			return value / (100 * 100); //it converts square meters to cm
+		}
+		else
+		{
+			return value;
+		}
+	}
+
+	public static double convertVolume(double value, String unit)
+	{
+		if(unit.equalsIgnoreCase("in"))
+		{
+			return value / (2.54 * 2.54 * 2.54); //converts cubic inches to cm
+		}
+		else if(unit.equalsIgnoreCase("m"))
+		{
+			return value / (100 * 100 * 100); //converts cubic meters to cm
+		}
+		else
+		{
+			return value;
+		}
+	}
+
+	public static double getPositiveDouble(Scanner input, String prompt)
+	{
+		double value;
+
+		System.out.print(prompt);
+
+		while(!input.hasNextDouble()) //checks if input is a number
+		{
+			System.out.print("Invalid input. Please enter a number: ");
+			input.next();
+		}
+
+		value = input.nextDouble();
+
+		while(value <= 0) //checks if the measurement is positive
+		{
+			System.out.print("Invalid measurement. Please enter a positive number: ");
+
+			while(!input.hasNextDouble()) //checks that the retry is actually a number too, so a letter here can't crash the program
+			{
+				System.out.print("Invalid input. Please enter a number: ");
+				input.next();
+			}
+
+			value = input.nextDouble();
+		}
+
+		return value;
+	}
+
+	// fix: this used to be declared a second time further down (duplicate method = compile error).
+	// Only one copy is kept now, here, next to displayHistory() which uses it.
+	public static void addHistory(String calculation)
+	{
+	    //stores calculations in the history array
+
+	    if(historyCount < history.length)
+	    {
+	        history[historyCount] = calculation;
+	        historyCount++;
+	        //adds the calculation to the next available position
+	    }
+	}
+
+	// fix: this method was called in case 10 but never defined (compile error: cannot find symbol)
+	public static void displayShapeInformation()
+	{
+	    System.out.println("\n========== SHAPE INFORMATION ==========");
+	    System.out.println("1. Circle              - Area = pi * r^2 | Circumference = 2 * pi * r");
+	    System.out.println("2. Rectangle           - Area = l * w    | Perimeter = 2(l + w)");
+	    System.out.println("3. Square              - Area = s^2      | Perimeter = 4s");
+	    System.out.println("4. Equilateral Triangle- Area = (sqrt(3)/4) * s^2 | Perimeter = 3s");
+	    System.out.println("5. Isosceles Triangle  - Area = (b * h) / 2 | Perimeter = 2(equal side) + base");
+	    System.out.println("6. Right Triangle      - Area = (b * h) / 2 | Perimeter = base + height + hypotenuse");
+	    System.out.println("7. Rectangular Prism   - Surface Area = 2(lw + lh + wh) | Volume = l * w * h");
+	    System.out.println("8. Triangular Prism    - Surface Area = 2(triangle area) + (perimeter * length) | Volume = (triangle area) * length");
+	    System.out.println("9. Cuboid              - Surface Area = 6s^2 | Volume = s^3");
+	    System.out.println("\nAccepted units for all shapes: cm, m, in");
+	}
+
+	public static void displayHistory()
+	{
+	    System.out.println("\n========== CALCULATION HISTORY ==========");
+
+
+	    if(historyCount == 0)
+	    {
+	        System.out.println("No calculations have been completed yet.");
+	        //checks if there are no previous calculations
+	    }
+
+
+	    else
+	    {
+	        for(int i = 0; i < historyCount; i++)
+	        {
+	            System.out.println("\nCalculation " + (i + 1));
+	            System.out.println(history[i]);
+	            //loops through the history array and displays calculations
+	        }
+	    }
+	}
+}
+
+
