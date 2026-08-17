@@ -1,0 +1,150 @@
+//Name: Ria Shah 
+
+//Date: July 8, 2026 
+
+//Assignment Title: Portfolio Question #3
+
+//Purpose: This program takes in an input of a number, for example, “3” and prints out the corresponding month in //the year, “March”. The program allows the user to keep running the program by using a loop and allows the user to //quit by typing in “quit”. The program also subtracts the number that was imputed for the month and subtracts this //number from the total days there are in that month and returns the output in binary. For example, if someone were //to enter 11, the program would subtract 11 from the number of days in the corresponding month, November to //receive 19 and return this value in binary which is: 10011. 
+
+import java.util.Scanner;
+
+public class MonthCalc {
+    public static void main(String[] args) {
+        //allows the program to accept inputs from the user
+
+        Scanner input = new Scanner(System.in);
+        //creates a Scanner object to read input from the user's keyboard
+
+        while (true) {
+            //creates a loop so that the user can keep running the program
+
+            System.out.println("1 = January");
+            System.out.println("2 = February");
+            System.out.println("3 = March");
+            System.out.println("4 = April");
+            System.out.println("5 = May");
+            System.out.println("6 = June");
+            System.out.println("7 = July");
+            System.out.println("8 = August");
+            System.out.println("9 = September");
+            System.out.println("10 = October");
+            System.out.println("11 = November");
+            System.out.println("12 = December");
+            System.out.println("Type quit to exit.");
+            //These lines of codes outputs the months and their respective number and also gives the user the option to quit the program
+
+            System.out.print("Enter the number: ");
+            //asks the user to enter a number
+
+            if (input.hasNextInt()) {
+                //checks if the user's input is an integer
+
+                int number = input.nextInt();
+                //reads the number and stores in the variable number
+
+                int monthdays = 0;
+                //sets an initial value of days in the month
+
+                if (number >= 1 && number <= 12) {
+                    //checks if the number is between 1 and 12
+
+                    if (number == 1) {
+                        System.out.println("January");
+                        monthdays = 31;
+                        //if the user selects 1 it prints out January and sets the days of the month to 31
+                    }
+                    else if (number == 2) {
+                        System.out.println("February");
+                        monthdays = 28;
+                        //if the user selects 2 it prints out February and sets the days of the month to 28
+                    }
+                    else if (number == 3) {
+                        System.out.println("March");
+                        monthdays = 31;
+                        //if the user selects 3 it prints out March and sets the days of the month to 31
+                    }
+                    else if (number == 4) {
+                        System.out.println("April");
+                        monthdays = 30;
+                        //if the user selects 4 it prints out April and sets the days of the month to 30
+                    }
+                    else if (number == 5) {
+                        System.out.println("May");
+                        monthdays = 31;
+                        //if the user selects 5 it prints out May and sets the days of the month to 31
+                    }
+                    else if (number == 6) {
+                        System.out.println("June");
+                        monthdays = 30;
+                        //if the user selects 6 it prints out June and sets the days of the month to 30
+                    }
+                    else if (number == 7) {
+                        System.out.println("July");
+                        monthdays = 31;
+                        //if the user selects 7 it prints out July and sets the days of the month to 31
+                    }
+                    else if (number == 8) {
+                        System.out.println("August");
+                        monthdays = 31;
+                        //if the user selects 8 it prints out August and sets the days of the month to 31
+                    }
+                    else if (number == 9) {
+                        System.out.println("September");
+                        monthdays = 30;
+                        //if the user selects 9 it prints out September and sets the days of the month to 30
+                    }
+                    else if (number == 10) {
+                        System.out.println("October");
+                        monthdays = 31;
+                        //if the user selects 10 it prints out October and sets the days of the month to 31
+                    }
+                    else if (number == 11) {
+                        System.out.println("November");
+                        monthdays = 30;
+                        //if the user selects 11 it prints out November and sets the days of the month to 30
+                    }
+                    else {
+                        System.out.println("December");
+                        monthdays = 31;
+                        //if the user selects 12 it prints out December and sets the days of the month to 31
+                    }
+
+                    int difference = monthdays - number;
+                    //calculates the difference between the number of days in the month and the number
+
+                    System.out.println("Difference: " + difference);
+                    //prints out the difference between the month and days
+
+                    System.out.println("Binary: " + Integer.toBinaryString(difference));
+                    //converts this to binary
+
+                }
+                else {
+                    System.out.println("Please enter a month number between 1 and 12.");
+                    //if the input is not valid it prompts the user to reenter
+                }
+
+            }
+            else {
+
+                String answer = input.next();
+                //reads the user's text input
+
+                if (answer.equalsIgnoreCase("quit")) {
+                    break;
+                    //if the user chooses to quit it stops the program
+                }
+                else {
+                    System.out.println("Invalid input. Please enter a number between 1 and 12 or type \"quit\".");
+                    //if the input is invalid the program asks the user to try again
+                }
+            }
+        }
+
+        System.out.println("Thank you for using the program. Come back again!");
+        //prints a goodbye message to the user
+
+        input.close();
+        //closes the Scanner
+    }
+}
