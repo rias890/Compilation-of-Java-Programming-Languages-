@@ -1,0 +1,410 @@
+/*
+ * Name: Ria Shah
+ * Date: July 14 2026
+ * Program/Assignment Title: Tic Tac Toe Game
+ *
+ * Description:
+ * This program uses methods, loops, arrays, and error trapping
+ * to play a Tic Tac Toe game with two users.
+ *
+ 
+ * - Board now shows position numbers 1-9 on empty spots so players know what to type
+ * - Added exception handling so invalid (non-numeric) input doesn't crash the program
+ * - Replaced the if/else menu with a switch/case menu system
+ */
+
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class TicTacToeGame
+{
+    static Scanner input = new Scanner(System.in);
+    //creates a Scanner object to read input from the user
+
+    static char[][] board = new char[3][3];
+    //stores the Tic Tac Toe board
+
+    static String player1;
+    static String player2;
+    //stores the names of the players
+
+    static char marker1;
+    static char marker2;
+    //stores the markers for each player
+
+
+    public static void main(String[] args)
+    {
+        //starts the program
+
+        boolean play = true;
+        //controls if the program continues running
+
+        setup_players();
+        //gets player names and markers
+
+
+        while(play)
+        {
+            setup_board();
+            //clears the board before starting a new game
+
+            boolean game_over = false;
+            //checks if the game has ended
+
+            boolean player_one_turn = true;
+            //player 1 starts first
+
+
+            while(!game_over)
+            {
+                print_board();
+                //displays the current board
+
+
+                if(player_one_turn)
+                {
+                    make_move(player1, marker1);
+                    //allows player 1 to place their marker
+
+
+                    if(check_winner(marker1))
+                    {
+                        print_board();
+                        System.out.println(player1 + " wins!");
+                        game_over = true;
+                    }
+                }
+
+
+                else
+                {
+                    make_move(player2, marker2);
+                    //allows player 2 to place their marker
+
+
+                    if(check_winner(marker2))
+                    {
+                        print_board();
+                        System.out.println(player2 + " wins!");
+                        game_over = true;
+                    }
+                }
+
+
+                if(check_draw() && !game_over)
+                {
+                    print_board();
+                    System.out.println("The game is a draw!");
+                    game_over = true;
+                }
+
+
+                player_one_turn = !player_one_turn;
+                //switches to the other player's turn
+            }
+
+
+
+            System.out.println("\nChoose an option:");
+            System.out.println("1 - Play Again");
+            System.out.println("2 - Change Players");
+            System.out.println("3 - End Game");
+
+            int choice = get_menu_choice();
+            //this method reads the menu choice and catches non-numeric input
+
+
+            switch(choice)
+            {
+                case 1:
+                    //starts a new game with the same players
+                    play = true;
+                    break;
+
+                case 2:
+                    //gets new player information
+                    setup_players();
+                    play = true;
+                    break;
+
+                default:
+                    //ends the program (covers option 3 and any other valid number)
+                    play = false;
+                    break;
+            }
+        }
+
+
+        System.out.println("Thanks for playing!");
+    }
+
+
+
+    //gets the player names and markers
+    static void setup_players()
+    {
+        System.out.print("Player 1 Name: ");
+        player1 = input.next();
+
+
+        System.out.print("Player 2 Name: ");
+        player2 = input.next();
+
+
+
+        while(true)
+        //continues asking until a valid marker is entered
+        {
+            System.out.print(player1 + ", choose X or O: ");
+
+            marker1 = input.next().toUpperCase().charAt(0);
+            //gets player 1's marker
+
+
+            if(marker1 == 'X')
+            {
+                marker2 = 'O';
+                break;
+            }
+
+            else if(marker1 == 'O')
+            {
+                marker2 = 'X';
+                break;
+            }
+
+            else
+            {
+                System.out.println("Invalid choice.");
+                //displays an error message
+            }
+        }
+
+
+        System.out.println(player1 + " = " + marker1);
+        System.out.println(player2 + " = " + marker2);
+        //displays each player's marker
+    }
+
+
+
+    //fills the board with empty spaces
+    static void setup_board()
+    {
+        for(int row = 0; row < 3; row++)
+        //loops through each row
+        {
+            for(int col = 0; col < 3; col++)
+            //loops through each column
+            {
+                board[row][col] = ' ';
+            }
+        }
+    }
+
+
+
+    //prints the current game board
+    static void print_board()
+    {
+        System.out.println();
+
+
+        for(int row = 0; row < 3; row++)
+        {
+            //prints each row of the board
+
+            for(int col = 0; col < 3; col++)
+            {
+                if(board[row][col] == ' ')
+                {
+                    //if the spot is empty, show its position number (1-9) instead of a blank
+                    int position = row * 3 + col + 1;
+                    System.out.print(position);
+                }
+
+                else
+                {
+                    System.out.print(board[row][col]);
+                }
+
+
+                if(col < 2)
+                {
+                    System.out.print(" | ");
+                }
+            }
+
+
+            System.out.println();
+
+
+            if(row < 2)
+            {
+                System.out.println("---------");
+            }
+        }
+
+
+        System.out.println();
+    }
+
+
+
+    //allows a player to place their marker
+    static void make_move(String player, char marker)
+    {
+        int position;
+        //stores the player's chosen position
+
+
+        while(true)
+        //continues asking until a valid move is made
+        {
+            System.out.print(player + " choose a position (1-9): ");
+
+            try
+            {
+                position = input.nextInt();
+                //tries to read the position as a number
+            }
+            catch(InputMismatchException e)
+            {
+                System.out.println("Invalid position. Please enter a number.");
+                //this runs if the user types something that isn't a number
+                input.nextLine();
+                //clears the bad input so the scanner doesn't get stuck
+                continue;
+            }
+
+
+            if(position < 1 || position > 9)
+            {
+                System.out.println("Invalid position.");
+                //checks if position is between 1 and 9
+            }
+
+
+            else
+            {
+                int row = (position - 1) / 3;
+                int col = (position - 1) % 3;
+                //converts the position number into a row and column
+
+
+                if(board[row][col] == ' ')
+                {
+                    board[row][col] = marker;
+                    //places the marker on the board
+
+                    break;
+                }
+
+
+                else
+                {
+                    System.out.println("That spot is already taken.");
+                    //asks the player to choose another spot
+                }
+            }
+        }
+    }
+
+
+
+    //reads the after-game menu choice and catches non-numeric input
+    static int get_menu_choice()
+    {
+        while(true)
+        {
+            try
+            {
+                return input.nextInt();
+                //tries to read the menu choice as a number
+            }
+            catch(InputMismatchException e)
+            {
+                System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                //this runs if the user types something that isn't a number
+                input.nextLine();
+                //clears the bad input so the scanner doesn't get stuck
+            }
+        }
+    }
+
+
+
+    //checks if a player has won
+    static boolean check_winner(char marker)
+    {
+        //checks rows
+        for(int row = 0; row < 3; row++)
+        {
+            if(board[row][0] == marker &&
+               board[row][1] == marker &&
+               board[row][2] == marker)
+            {
+                return true;
+            }
+        }
+
+
+
+        //checks columns
+        for(int col = 0; col < 3; col++)
+        {
+            if(board[0][col] == marker &&
+               board[1][col] == marker &&
+               board[2][col] == marker)
+            {
+                return true;
+            }
+        }
+
+
+
+        //checks first diagonal
+        if(board[0][0] == marker &&
+           board[1][1] == marker &&
+           board[2][2] == marker)
+        {
+            return true;
+        }
+
+
+
+        //checks second diagonal
+        if(board[0][2] == marker &&
+           board[1][1] == marker &&
+           board[2][0] == marker)
+        {
+            return true;
+        }
+
+
+        return false;
+    }
+
+
+
+    //checks if the game is a draw
+    static boolean check_draw()
+    {
+        for(int row = 0; row < 3; row++)
+        {
+            for(int col = 0; col < 3; col++)
+            {
+                if(board[row][col] == ' ')
+                {
+                    return false;
+                }
+            }
+        }
+
+
+        return true;
+    }
+}
+
